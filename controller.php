@@ -22,17 +22,16 @@ class ApiBaseConfigPackage extends Package {
 		
 		$api1 = array();
 		$api1['pkgHandle'] = $this->pkgHandle;
-		$api1['route'] = 'config/:key';
-		$api1['routeName'] = t('Get or Delete a Site Config Entry');
+		$api1['route'] = 'config';
+		$api1['routeName'] = t('View Config Entrys');
 		$api1['class'] = 'config';
-		$api1['method'] = 'getConf';
+		$api1['method'] = 'listConf';
 		$api1['via'][] = 'get';
-		$api1['via'][] = 'delete';
 		
 		$api2 = array();
 		$api2['pkgHandle'] = $this->pkgHandle;
-		$api2['route'] = 'config/:pkg/:key';
-		$api2['routeName'] = t('Get or Delete a Package Config Entry');
+		$api2['route'] = 'config/:key';
+		$api2['routeName'] = t('Get or Delete a Site Config Entry');
 		$api2['class'] = 'config';
 		$api2['method'] = 'getConf';
 		$api2['via'][] = 'get';
@@ -40,16 +39,26 @@ class ApiBaseConfigPackage extends Package {
 		
 		$api3 = array();
 		$api3['pkgHandle'] = $this->pkgHandle;
-		$api3['route'] = 'config/new';
-		$api3['routeName'] = t('Add Config Entry');
+		$api3['route'] = 'config/:pkg/:key';
+		$api3['routeName'] = t('Get or Delete a Package Config Entry');
 		$api3['class'] = 'config';
-		$api3['method'] = 'add';
-		$api3['via'][] = 'post';
+		$api3['method'] = 'getConf';
+		$api3['via'][] = 'get';
+		$api3['via'][] = 'delete';
+		
+		$api4 = array();
+		$api4['pkgHandle'] = $this->pkgHandle;
+		$api4['route'] = 'config/new';
+		$api4['routeName'] = t('Add Config Entry');
+		$api4['class'] = 'config';
+		$api4['method'] = 'add';
+		$api4['via'][] = 'post';
 
 		Loader::model('api_register', 'api');
-		ApiRegister::add($api);
+		ApiRegister::add($api1);
 		ApiRegister::add($api2);
 		ApiRegister::add($api3);
+		ApiRegister::add($api4);
 
 		parent::install(); //install the addon - meh
 	}

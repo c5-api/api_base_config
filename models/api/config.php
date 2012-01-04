@@ -13,6 +13,14 @@ class ApiConfig extends ApiController {
 		throw new Exception('ERROR_INVALID_ROUTE', 501);
 	}
 	
+	public function listConf() {
+		$resp = ApiResponse::getInstance();
+		$conf = new ConfigStore();
+		//$con = $conf->getStore();
+		$resp->setData($conf);
+		$resp->send();
+	}
+	
 	private function get($pkg, $id = null) {
 		if(!$id) {
 			$id = $pkg;
