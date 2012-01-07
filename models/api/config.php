@@ -2,36 +2,37 @@
 
 class ApiConfig extends ApiController {
 	
-	public function getConf($pkg, $id = null) {
+	public function getConf($id) {
 		if(API_REQUEST_METHOD == 'GET') {
 			$self = new self;
-			return $self->get($pkg, $id);
+			return $self->get($id);
 		} else if(API_REQUEST_METHOD == 'DELETE') {
 			$self = new self;
-			return $self->delete($pkg, $id);
+			return $self->delete($id);
 		}
 		throw new Exception('ERROR_INVALID_ROUTE', 501);
 	}
 	
 	public function listConf() {
 		$resp = ApiResponse::getInstance();
-		$conf = new ConfigStore();
-		//$con = $conf->getStore();
+		$self = new self;
+		$conf = $self->getEntries();
 		$resp->setData($conf);
 		$resp->send();
 	}
-	
-	private function get($pkg, $id = null) {
-		if(!$id) {
-			$id = $pkg;
-			unset($pkg);
+
+	private function getEntries() {
+		$db = Loader::db();
+		$r = $db->Execute('SELECT * FROM Config');
+		$objs = array();
+		while($row = $r->FetchRow()) {
+			$objs[] = $row;
 		}
-		//echo $id;
-		//$id = $_POST['key'];
+		return $objs;
+	}
+
+	private function get($id) {
 		$cfg = new Config();
-		if($pkg) {
-			$cfg->setPackageObject(Package::getByHandle($pkg));
-		}
 		$conf = $cfg->get($id, true);
 		$resp = ApiResponse::getInstance();
 		if(is_object($conf)) {
@@ -50,16 +51,6 @@ class ApiConfig extends ApiController {
 		$vars = $_POST;
 		$resp = ApiResponse::getInstance();
 		//print_r($vars);
-		$uID = $vars['uID'];
-		$pkg = $vars['pkg'];//ID or handle
-		if(is_numeric($pkg)) {
-			$pkg = Package::getByID($pkg);
-		} else if(is_string($pkg)) {
-			$pkg = Package::getByHandle($pkg);
-		} else {
-			$pkg = null;
-		}
-
 		$key = $vars['key'];
 		$value = $vars['value'];
 		if(!$key || !$value) { //bad request
@@ -70,9 +61,6 @@ class ApiConfig extends ApiController {
 		}
 		
 		$conf = new Config();
-		if(is_object($pkg)) {
-			$conf->setPackageObject($pkg);
-		}
 		$get = $conf;//do I need to do this?
 		$obj = $get->get($key, true);
 
@@ -91,17 +79,8 @@ class ApiConfig extends ApiController {
 		
 	}
 	
-	private function delete($pkg, $id = null) {
-		if(!$id) {
-			$id = $pkg;
-			unset($pkg);
-		}
-		//echo $id;
-		//$id = $_POST['key'];
+	private function delete($id) {
 		$cfg = new Config();
-		if($pkg) {
-			$cfg->setPackageObject(Package::getByHandle($pkg));
-		}
 		$conf = $cfg->get($id, true);
 		$resp = ApiResponse::getInstance();
 		if(is_object($conf)) {
