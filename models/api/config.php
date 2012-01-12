@@ -1,37 +1,14 @@
 <?php defined('C5_EXECUTE') or die("Access Denied.");
 
 class ApiConfig extends ApiController {
-	
+
+	/**
+	 * Get a config entry
+	 * @route /config/:key
+	 * @method GET
+	 * @errors ERROR_NOT_FOUND
+	 */		
 	public function getConf($id) {
-		if(API_REQUEST_METHOD == 'GET') {
-			$self = new self;
-			return $self->get($id);
-		} else if(API_REQUEST_METHOD == 'DELETE') {
-			$self = new self;
-			return $self->delete($id);
-		}
-		throw new Exception('ERROR_INVALID_ROUTE', 501);
-	}
-	
-	public function listConf() {
-		$resp = ApiResponse::getInstance();
-		$self = new self;
-		$conf = $self->getEntries();
-		$resp->setData($conf);
-		$resp->send();
-	}
-
-	private function getEntries() {
-		$db = Loader::db();
-		$r = $db->Execute('SELECT * FROM Config');
-		$objs = array();
-		while($row = $r->FetchRow()) {
-			$objs[] = $row;
-		}
-		return $objs;
-	}
-
-	private function get($id) {
 		$cfg = new Config();
 		$conf = $cfg->get($id, true);
 		$resp = ApiResponse::getInstance();
@@ -46,7 +23,30 @@ class ApiConfig extends ApiController {
 			$resp->send();
 		}
 	}
-	
+
+	/**
+	 * List Config Entires
+	 * @route /config
+	 * @method GET
+	 */		
+	public function listConf() {
+		$resp = ApiResponse::getInstance();
+		$db = Loader::db();
+		$r = $db->Execute('SELECT cfKey FROM Config WHERE pkgID = 0 and uID = 0');
+		$conf = array();
+		while($row = $r->FetchRow()) {
+			$conf[] = $row['cfKey'];
+		}
+		$resp->setData($conf);
+		$resp->send();
+	}
+
+	/**
+	 * Add Config Entries
+	 * @route /config/add
+	 * @method POST
+	 * @errors ERROR_BAD_REQUEST | ERROR_ALREADY_EXISTS
+	 */		
 	public function add() {
 		$vars = $_POST;
 		$resp = ApiResponse::getInstance();
@@ -55,7 +55,7 @@ class ApiConfig extends ApiController {
 		$value = $vars['value'];
 		if(!$key || !$value) { //bad request
 			$resp->setError(true);
-			$resp->setMessage('ERROR_INVALID_REQUEST');
+			$resp->setMessage('ERROR_BAD_REQUEST');
 			$resp->setCode(400);
 			$resp->send();
 		}
@@ -79,12 +79,44 @@ class ApiConfig extends ApiController {
 		
 	}
 	
-	private function delete($id) {
+	/**
+	 * Delete Config Entries
+	 * @route /config/destroy
+	 * @method POST
+	 * @errors ERROR_NOT_FOUND
+	 */	
+	public function destroy() {
+		$vars = $_POST;
+		$id = $vars['key'];
 		$cfg = new Config();
 		$conf = $cfg->get($id, true);
 		$resp = ApiResponse::getInstance();
 		if(is_object($conf)) {
 			$cfg->clear($key);
+			$resp->send();
+		} else {
+			$resp->setError(true);
+			$resp->setCode(404);
+			$resp->setMessage('ERROR_NOT_FOUND');
+			$resp->send();
+		}
+	}
+
+	/**
+	 * Update Config Entries
+	 * @route /config/update
+	 * @method POST
+	 * @errors ERROR_NOT_FOUND
+	 */		
+	public function update() {
+		$vars = $_POST;
+		$id = $vars['key'];
+		$value = $vars['value'];
+		$cfg = new Config();
+		$conf = $cfg->get($id, true);
+		$resp = ApiResponse::getInstance();
+		if(is_object($conf)) {
+			$cfg->save($key, $value);
 			$resp->send();
 		} else {
 			$resp->setError(true);

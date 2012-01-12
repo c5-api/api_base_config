@@ -31,20 +31,10 @@ class ApiBaseConfigPackage extends Package {
 		$api2 = array();
 		$api2['pkgHandle'] = $this->pkgHandle;
 		$api2['route'] = 'config/:key';
-		$api2['routeName'] = t('Get or Delete a Site Config Entry');
+		$api2['routeName'] = t('Get a Site Config Entry');
 		$api2['class'] = 'config';
 		$api2['method'] = 'getConf';
 		$api2['via'][] = 'get';
-		$api2['via'][] = 'delete';
-		
-		$api3 = array();
-		$api3['pkgHandle'] = $this->pkgHandle;
-		$api3['route'] = 'config/:pkg/:key';
-		$api3['routeName'] = t('Get or Delete a Package Config Entry');
-		$api3['class'] = 'config';
-		$api3['method'] = 'getConf';
-		$api3['via'][] = 'get';
-		$api3['via'][] = 'delete';
 		
 		$api4 = array();
 		$api4['pkgHandle'] = $this->pkgHandle;
@@ -54,11 +44,28 @@ class ApiBaseConfigPackage extends Package {
 		$api4['method'] = 'add';
 		$api4['via'][] = 'post';
 
+		$api5 = array();
+		$api5['pkgHandle'] = $this->pkgHandle;
+		$api5['route'] = 'config/destroy';
+		$api5['routeName'] = t('Delete a Config Entry');
+		$api5['class'] = 'config';
+		$api5['method'] = 'destroy';
+		$api5['via'][] = 'post';
+
+		$api6 = array();
+		$api6['pkgHandle'] = $this->pkgHandle;
+		$api6['route'] = 'config/update';
+		$api6['routeName'] = t('Update Config Entries');
+		$api6['class'] = 'config';
+		$api6['method'] = 'udpate';
+		$api6['via'][] = 'post';
+
 		Loader::model('api_register', 'api');
 		ApiRegister::add($api1);
-		ApiRegister::add($api2);
-		ApiRegister::add($api3);
 		ApiRegister::add($api4);
+		ApiRegister::add($api5);
+		ApiRegister::add($api6);
+		ApiRegister::add($api2);
 
 		parent::install(); //install the addon - meh
 	}
