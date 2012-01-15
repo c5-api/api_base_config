@@ -46,7 +46,7 @@ class ApiBaseConfigPackage extends Package {
 		
 		$api4 = array();
 		$api4['pkgHandle'] = $this->pkgHandle;
-		$api4['route'] = $baseRoute.'/new';
+		$api4['route'] = $baseRoute.'/-/new';
 		$api4['routeName'] = t('Add Config Entry');
 		$api4['class'] = 'Config';
 		$api4['method'] = 'add';
@@ -54,7 +54,7 @@ class ApiBaseConfigPackage extends Package {
 
 		$api5 = array();
 		$api5['pkgHandle'] = $this->pkgHandle;
-		$api5['route'] = $baseRoute.'/destroy';
+		$api5['route'] = $baseRoute.'/-/destroy';
 		$api5['routeName'] = t('Delete a Config Entry');
 		$api5['class'] = 'Config';
 		$api5['method'] = 'destroy';
@@ -62,7 +62,7 @@ class ApiBaseConfigPackage extends Package {
 
 		$api6 = array();
 		$api6['pkgHandle'] = $this->pkgHandle;
-		$api6['route'] = $baseRoute.'/update';
+		$api6['route'] = $baseRoute.'/-/update';
 		$api6['routeName'] = t('Update Config Entries');
 		$api6['class'] = 'Config';
 		$api6['method'] = 'update';
